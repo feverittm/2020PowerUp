@@ -1,8 +1,7 @@
-package frc.team997.robot.subsystems;
+package frc.robot.subsystems;
 
-import frc.team997.robot.Robot;
-import frc.team997.robot.RobotMap;
-import frc.team997.robot.commands.ArcadeDrive;
+import frc.robot.Robot;
+import frc.robot.Constants;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
@@ -12,17 +11,16 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.kauailabs.navx.frc.AHRS;
 
-import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 /**
  *
  */
-public class DriveTrain extends Subsystem {
+public class DriveTrain extends SubsystemBase {
 
 	private TalonSRX leftTalon;
 	private TalonSRX rightTalon;
-	//temp
 	private VictorSPX leftVictor;
 	private VictorSPX leftVictor2;
 	private VictorSPX rightVictor;
@@ -50,12 +48,12 @@ public class DriveTrain extends Subsystem {
 		 * https://github.com/CrossTheRoadElec/Phoenix-Examples-Languages/blob/master/Java/VelocityClosedLoop
 		 */
 		
-		leftTalon = new TalonSRX(RobotMap.Ports.leftTalonPort);
-		rightTalon = new TalonSRX(RobotMap.Ports.rightTalonPort);
-		leftVictor = new VictorSPX(RobotMap.Ports.leftVictorPort);
-		leftVictor2 = new VictorSPX(RobotMap.Ports.leftVictorPort2);
-		rightVictor = new VictorSPX(RobotMap.Ports.rightVictorPort);
-		rightVictor2 = new VictorSPX(RobotMap.Ports.rightVictorPort2);
+		leftTalon = new TalonSRX(Constants.Ports.leftTalonPort);
+		rightTalon = new TalonSRX(Constants.Ports.rightTalonPort);
+		leftVictor = new VictorSPX(Constants.Ports.leftVictorPort);
+		leftVictor2 = new VictorSPX(Constants.Ports.leftVictorPort2);
+		rightVictor = new VictorSPX(Constants.Ports.rightVictorPort);
+		rightVictor2 = new VictorSPX(Constants.Ports.rightVictorPort2);
 
 		leftVictor.follow(leftTalon);
 		leftVictor2.follow(leftTalon);
@@ -132,7 +130,7 @@ public class DriveTrain extends Subsystem {
 		 * Set-up the gyro
 		 */
 		try {
-			ahrs = new AHRS(RobotMap.Ports.AHRS);
+			ahrs = new AHRS(Constants.Ports.AHRS);
 			System.out.println("ahrs is cool!");
 			ahrs.reset();
 			init_angle = ahrs.getAngle();
@@ -154,7 +152,7 @@ public class DriveTrain extends Subsystem {
 	public void initDefaultCommand() {
 		// Set the default command for a subsystem here.
 		//setDefaultCommand(new TankDrive());
-		setDefaultCommand(new ArcadeDrive());
+		//setDefaultCommand(new ArcadeDrive());
 	}
 
 	private double getDecell(double velocity, double prevVelocity) { // copied from 2017 :I
@@ -278,8 +276,8 @@ public class DriveTrain extends Subsystem {
 			SmartDashboard.putNumber("DT - Right master voltage", rightTalon.getMotorOutputVoltage());
 			SmartDashboard.putNumber("DT - Left Encoder", getLeftEncoderTicks());
 			SmartDashboard.putNumber("DT - Right Encoder", getRightEncoderTicks());
-			SmartDashboard.putNumber("DT - Left Encoder distance in inches", getLeftEncoderTicks()*RobotMap.Values.inchesPerTick);
-			SmartDashboard.putNumber("DT - Right Encoder distance in inches", getRightEncoderTicks()*RobotMap.Values.inchesPerTick);
+			SmartDashboard.putNumber("DT - Left Encoder distance in inches", getLeftEncoderTicks()*Constants.Values.inchesPerTick);
+			SmartDashboard.putNumber("DT - Right Encoder distance in inches", getRightEncoderTicks()*Constants.Values.inchesPerTick);
 			SmartDashboard.putNumber("DT - Left Encoder Velocity", leftTalon.getSelectedSensorVelocity(0));
 			SmartDashboard.putNumber("DT - Right EncoderVelocity", rightTalon.getSelectedSensorVelocity(0));
 			SmartDashboard.putNumber("DT - Heading", getHeading());
@@ -294,29 +292,29 @@ public class DriveTrain extends Subsystem {
 	}
 
 	public double getTotalLeftCurrent() {
-		totalLeftCurrent = (Robot.pdp.getCurrent(RobotMap.PDPPorts.leftDriveTrainTalon)
-					+ Robot.pdp.getCurrent(RobotMap.PDPPorts.leftDriveTrain)
-					+ Robot.pdp.getCurrent(RobotMap.PDPPorts.leftDriveTrain2));
+		totalLeftCurrent = (Robot.pdp.getCurrent(Constants.PDPPorts.leftDriveTrainTalon)
+					+ Robot.pdp.getCurrent(Constants.PDPPorts.leftDriveTrain)
+					+ Robot.pdp.getCurrent(Constants.PDPPorts.leftDriveTrain2));
 		return totalLeftCurrent;
 	}
 
 	public double getTotalRightCurrent() {
 		
-		totalRightCurrent = (Robot.pdp.getCurrent(RobotMap.PDPPorts.rightDriveTrainTalon)
-				+ Robot.pdp.getCurrent(RobotMap.PDPPorts.rightDriveTrain)
-				+ Robot.pdp.getCurrent(RobotMap.PDPPorts.rightDriveTrain2));
+		totalRightCurrent = (Robot.pdp.getCurrent(Constants.PDPPorts.rightDriveTrainTalon)
+				+ Robot.pdp.getCurrent(Constants.PDPPorts.rightDriveTrain)
+				+ Robot.pdp.getCurrent(Constants.PDPPorts.rightDriveTrain2));
 		return totalRightCurrent;
 	}
 
 	public void safeVoltages(double leftSpeed, double rightSpeed) {
 
-		if (getTotalLeftCurrent() > RobotMap.Values.drivetrainLeftLimit) {
+		if (getTotalLeftCurrent() > Constants.Values.drivetrainLeftLimit) {
 			leftTalon.set(ControlMode.PercentOutput, 0);
 		} else {
 			leftTalon.set(ControlMode.PercentOutput, leftSpeed);
 		}
 
-		if (getTotalRightCurrent() > RobotMap.Values.drivetrainRightLimit) {
+		if (getTotalRightCurrent() > Constants.Values.drivetrainRightLimit) {
 			rightTalon.set(ControlMode.PercentOutput, 0);
 		} else {
 			rightTalon.set(ControlMode.PercentOutput, rightSpeed);
