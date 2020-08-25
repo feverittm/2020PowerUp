@@ -31,7 +31,7 @@ Robot has the following subsystems:
   
     b - 'Cube' sensor
   
-    c - Pneimatic lift/release
+    c - Pneumatic lift/lower 
 
 4 - Climber
 
